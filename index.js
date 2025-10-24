@@ -13,7 +13,7 @@ app.listen(port, () => {
 
 app.route('/')
 .all((req,res) => {
-    res.send('Success');
+    res.send('VibeFX');
 });
 
 // ROUTES ///////////////////////////////////////////
