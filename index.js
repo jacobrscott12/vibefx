@@ -13,7 +13,7 @@ app.listen(port, () => {
 
 app.route('/')
 .all((req,res) => {
-    res.send('VibeFX');
+    res.render('index.ejs');
 });
 
 // ROUTES ///////////////////////////////////////////
@@ -26,7 +26,7 @@ const projectRoute = require('./routes/project.js');
 app.use('/project', projectRoute);
 
 const formRoute = require('./routes/form.js');
-app.use('/form', formRoute);
+app.use('/forms', formRoute);
 
 
 if(global.DEBUG === true) {

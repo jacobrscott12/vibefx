@@ -37,7 +37,7 @@ router.route('/create')
 
 router.route('/copyworkspace')
 .all((req,res) => {
-    const ssKey = req.query.b;
+    const ssKey = ssConst.authKey;
     const workspaceID = req.query.id;
     const newWorkspaceName = req.query.name;
 
@@ -63,7 +63,7 @@ router.route('/createworkspace')
 
 router.route('/getsheet')
 .all((req,res) => {
-    const ssKey = req.query.b;
+    const ssKey = ssConst.authKey;
     const sheetID = req.query.id;
 
     async function getSheet(ssKey, sheetID) {

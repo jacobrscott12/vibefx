@@ -7,4 +7,9 @@ router.route('/')
     res.send('app')
 });
 
+router.route('/lem')
+.get((req,res) => {
+    res.render('forms/lem.ejs')
+})
+
 module.exports = router;

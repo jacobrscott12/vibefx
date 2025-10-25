@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEM Intake</title>
+
+    <%- include('../partials/style'); %>
+</head>
+<body>
+    <div id="page-wrapper">
+        <header>
+            <div class="header-image">
+                <img src="https://vibefx.ca/storage/2024/05/vibefx-logo.webp" alt="">
+            </div>
+            <h1>Labour, Equipment, Material [LEM] Report</h1>
+        </header>
+        <div id="body-wrapper">
+            <form action="" method="post">
+                <div id="form-wrapper">
+                    <div class="form-section">
+                        <h2>Shift Information</h2>
+                        <div class="form-row">
+                            <label for="job-number">Job Number</label>
+                            <select name="job-number" id="job-number">
+                                <option value="J30033">J30033</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>Labour</h2>
+                        <div id="labour-input-rows">
+                            
+                        </div>
+                        <p id="create-worker-row-button" class="form-button" onclick="createLabourRow(labourRowIndex,workerArray)">Add Worker</p>
+                    </div>
+
+                    <div class="form-section">
+
+                    </div>
+
+
+                </div>
+                
+                
+                
+
+            </form>
+        </div>
+        <footer></footer>
+    </div>
+    <script>
+        let labourRowIndex = 1;
+
+        async function getWorkerArray() {
+            let response = await fetch(`http://localhost:3001/ss/getsheet?id=8131657195278212`);
+            let sheetObject = await response.json();
+
+            function parseWorkerArray(sheetObject) {
+                let workerArray = [];
+
+                for (const row of sheetObject.rows) {
+                    
+                    let cellObject = {};
+                    for (const cell of row.cells) {
+                        cellObject[cell.columnName] = cell.value;
+                    }
+
+                    let workerObject = {};
+                    
+                    
+                    workerObject = {
+                        id: cellObject['Employee Identification (EID)'],
+                        name: cellObject['Name'],
+                        status: cellObject['STATUS'],
+                        jcc: cellObject['JCC'],
+                        title: cellObject['Trade Description']
+                    }
+
+                    if(workerObject.status === 'Active' && workerObject.jcc !== undefined && workerObject.name !== undefined && workerObject.title !== undefined) {
+                        if(!workerObject.jcc.includes('Office')) {
+                            workerArray.push(workerObject);
+                        }
+                        
+                    }
+                    
+                }
+
+                return workerArray;
+            }
+
+
+            let workerArray = parseWorkerArray(sheetObject);
+            return workerArray;
+        }
+
+        function createLabourRow(rowIndex, workerArray) {
+            let workerDropdownOptions = `<option disabled selected></option>`;
+            for (const worker of workerArray) {
+                workerDropdownOptions += `<option value="${worker.id}">${worker.name} - ${worker.title}</option>`
+            }
+
+            const html = `
+            <div class="form-row">
+                <div class="form-row-inputs" >
+                    <span class="form-object">
+                        <label for="worker-${rowIndex}">Worker ${rowIndex}</label>
+                        <select name="worker-${rowIndex}" id="worker-${rowIndex}">
+                            ${workerDropdownOptions}
+                        </select>
+                    </span>
+
+                    <span class="form-object">
+                        <label for="worker-${rowIndex}-hours">Hours Worked</label>
+                        <input type="text" inputmode="numeric" name="worker-${rowIndex}-hours" id="worker-${rowIndex}-hours" class="fw-50">
+                    </span>
+
+                    <span class="form-object">
+                        <label for="worker-${rowIndex}-ojt">On-Job Training</label>
+                        
+                    </span>
+
+
+                </div>
+
+            </div>`
+
+            document.getElementById('labour-input-rows').innerHTML += html;
+            labourRowIndex++;
+            if(labourRowIndex > 10) {
+                document.getElementById('create-worker-row-button').style.display = "none";
+            }
+            
+        }
+
+
+        let workerArray;
+        getWorkerArray()
+        .then((result) => {
+            workerArray = result;
+            createLabourRow(labourRowIndex,workerArray);
+        });
+
+        let equipmentArray;
+
+
+
+        
+
+
+        
+
+
+
+    </script>
+</body>
+
+</html>

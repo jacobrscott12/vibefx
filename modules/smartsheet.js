@@ -354,6 +354,71 @@ async function copyFolder(ssKey, queryObject) {
     return folder;
 }
 
+function parseSheet(sheetObject) {
+    
+    function makeColumnMap(columnArray) {
+        let map = {};
+
+        for (const col of columnArray) {
+            map[col.id] = col.title;
+        }
+
+        return map;
+    }
+
+    const colMap = makeColumnMap(sheetObject.columns);
+    const invertMap = Object.fromEntries(Object.entries(colMap).map(([key, value]) => [value, key])); 
+
+    function parseRows(rowArray) {
+        
+        function parseCells(cellArray) {
+            
+            let cells = [];
+
+            for (const cellObject of cellArray) {
+                let cell = {};
+
+                cell = {
+                    columnId: cellObject.columnId,
+                    columnName: colMap[cellObject.columnId],
+                    value: cellObject.value
+                }
+
+                cells.push(cell);
+            }
+            return cells;
+        }
+
+        let rows = [];
+        for (const rowObject of rowArray) {
+            let row = {};
+            row = {
+                id: rowObject.id,
+                rowNumber: rowObject.rowNumber,
+                cells: parseCells(rowObject.cells)
+            }
+
+            rows.push(row);
+        }
+
+        return rows;
+    }
+
+
+
+    let sheet = {
+        id: sheetObject.id,
+        name: sheetObject.name,
+        totalRowCount: sheetObject.totalRowCount,
+        colMap: colMap,
+        colMapInv: invertMap,
+        rows: parseRows(sheetObject.rows)
+    }
+
+    return sheet;
+
+}
+
 async function getSheet(ssKey, queryObject) {
     const sheetID = queryObject.sheetID;
 
@@ -376,7 +441,9 @@ async function getSheet(ssKey, queryObject) {
     );
 
     const sheet  = await response.json();
-    return sheet;
+    const parsedSheet = parseSheet(sheet);
+    // return sheet;
+    return parsedSheet;
 
 }
 
