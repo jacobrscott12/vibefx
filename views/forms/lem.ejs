@@ -54,7 +54,7 @@
         let labourRowIndex = 1;
 
         async function getWorkerArray() {
-            let response = await fetch(`http://localhost:3001/ss/getsheet?id=8131657195278212`);
+            let response = await fetch(`https://vibefx.ssutils.dev/ss/getsheet?id=8131657195278212`);
             let sheetObject = await response.json();
 
             function parseWorkerArray(sheetObject) {
